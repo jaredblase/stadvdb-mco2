@@ -1,6 +1,6 @@
 import { query } from '../../../lib/db'
 
-export default function userHandler(req, res) {
+export default async function userHandler(req, res) {
   const {
     query: { id },
     method,
@@ -8,8 +8,8 @@ export default function userHandler(req, res) {
 
   switch (method) {
     case 'GET':
-      // query(`SELECT FROM movies WHERE `)
-      res.status(200).json({ id, name: `User ${id}` })
+      const result = await query("SELECT * FROM movies WHERE id = ?", [parseInt(id)])
+      res.status(200).json({ result: result[0] })
       break
 
     case 'POST':

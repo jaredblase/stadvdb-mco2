@@ -6,11 +6,11 @@ import { useRouter } from 'next/router'
 export const siteTitle = 'IMDb Lite'
 
 function NavItem({ path, text }) {
-  const router = useRouter()
+  const { pathname } = useRouter()
 
   return (
     <Link href={path}>
-      {router.pathname == path ?
+      {pathname == path ?
         <a className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">{text}</a>
         :
         <a className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">{text}</a>
@@ -20,6 +20,8 @@ function NavItem({ path, text }) {
 }
 
 export default function Layout({ children, home }) {
+  const { back } = useRouter()
+
   return (
     <div className={''}>
       <Head>
@@ -82,12 +84,10 @@ export default function Layout({ children, home }) {
         <div className="max-w-xl mx-auto">
           {!home && (
             <div className="mb-5">
-              <Link href="/">
-                <span className="border-b border-transparent hover:border-gray-800 cursor-pointer">
-                  <i className="fas fa-chevron-left fa-sm mr-2" />
-                  <span>Back to home</span>
-                </span>
-              </Link>
+              <span className="border-b border-transparent hover:border-gray-800 cursor-pointer" onClick={back}>
+                <i className="fas fa-chevron-left fa-sm mr-2" />
+                <span>Back to home</span>
+              </span>
             </div>
           )}
           {children}
