@@ -1,5 +1,11 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { query } from '../../../lib/db'
 
-export default function handler(req, res) {
-  res.status(200).json({ name: 'John Doe' })
+export default async function handler(req, res) {
+
+  try {
+    const results = await query('SELECT * FROM movies WHERE name LIKE ?', [`%${req.query.q}%`])
+    res.status(200).json({ results })
+  } catch (err) {
+    console.log(err)
+  }
 }

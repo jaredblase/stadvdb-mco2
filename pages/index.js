@@ -1,13 +1,38 @@
 import Head from 'next/head'
+import { useState } from 'react'
+import useSWR from 'swr'
 import Layout, { siteTitle } from '../components/layout'
+import app from '../lib/axiosConfig'
+import MovieTable from '../components/move-table'
 
-export default function Home({ allPostsData }) {
+const fetcher = (url) => app.get(url)
+
+function useResults(q) {
+  const { data, error } = useSWR(q ? `/api/movies?q=${encodeURIComponent(q)}` : null, fetcher)
+
+  return {
+    results: data?.data?.results,
+    isLoading: q && !error && !data,
+    isError: error,
+  }
+}
+
+export default function Home() {
+  const [search, setSearch] = useState('')
+  const { results, isLoading, isError } = useResults(search)
+
+  const handleSearch = e => {
+    e.preventDefault()
+    const { q } = Object.fromEntries(new FormData(e.target))
+    if (q && q !== search) setSearch(q)
+  }
+
   return (
     <Layout home>
       <Head>
         <title>{siteTitle}</title>
       </Head>
-      <form>
+      <form onSubmit={handleSearch}>
         <div>
           <label htmlFor="search" className="block text-sm font-medium text-gray-700">Search movie</label>
           <div className="mt-1 relative rounded-md shadow-sm">
@@ -19,6 +44,8 @@ export default function Home({ allPostsData }) {
           </div>
         </div>
       </form>
+      {isLoading && <p>Stuff is loading</p>}
+      {results && <MovieTable movies={results} />}
     </Layout>
   )
 }
