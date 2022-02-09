@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import Layout, { siteTitle } from '../components/layout'
 import app from '../lib/axiosConfig'
-import MovieTable from '../components/move-table'
+import MovieTable from '../components/movie-table'
 import { useRouter } from 'next/router'
 
 const fetcher = (url) => app.get(url)
@@ -51,8 +51,17 @@ export default function Home() {
           </div>
         </div>
       </form>
-      {isLoading && <p>Stuff is loading</p>}
-      {results && <MovieTable movies={results} />}
+      <div className="flex flex-col my-8">
+        {isLoading &&
+          <div className="flex justify-center items-center">
+            <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        }
+        {results && (results.length ? <MovieTable movies={results} /> : <p className="text-center">No movies found!</p>)}
+        {isError && <p className="text-center">An Error has occurred!</p>}
+      </div>
     </Layout>
   )
 }

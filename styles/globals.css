@@ -18,3 +18,7 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
   -webkit-appearance:none;
 }
+
+table tr:nth-child(even) {
+  @apply bg-gray-50
+}
