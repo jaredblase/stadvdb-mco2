@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import ScrollToTop from './scroll-to-top'
 
 export const siteTitle = 'IMDb Lite'
 
@@ -93,6 +94,7 @@ export default function Layout({ children, home }) {
           {children}
         </div>
       </main>
+      <ScrollToTop />
     </div>
   )
 }
