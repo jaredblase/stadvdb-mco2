@@ -1,9 +1,10 @@
 import Head from 'next/head'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import Layout, { siteTitle } from '../components/layout'
 import app from '../lib/axiosConfig'
 import MovieTable from '../components/move-table'
+import { useRouter } from 'next/router'
 
 const fetcher = (url) => app.get(url)
 
@@ -20,12 +21,18 @@ function useResults(q) {
 export default function Home() {
   const [search, setSearch] = useState('')
   const { results, isLoading, isError } = useResults(search)
+  const { query: { q }, push } = useRouter()
 
   const handleSearch = e => {
     e.preventDefault()
     const { q } = Object.fromEntries(new FormData(e.target))
-    if (q && q !== search) setSearch(q)
+    if (q && q !== search) {
+      setSearch(q)
+      push('?q=' + q, undefined, { shallow: true })
+    }
   }
+
+  useEffect(() => setSearch(q), [])
 
   return (
     <Layout home>
@@ -39,7 +46,7 @@ export default function Home() {
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span className="text-gray-500 sm:text-sm"> <i className="fas fa-search fa-sm" /> </span>
             </div>
-            <input type="search" name="q" id="search" placeholder="Input search term here..."
+            <input type="search" name="q" id="search" placeholder="Input search term here..." defaultValue={q}
               className="focus:ring-gray-600 focus:border-gray-600 block w-full pl-8 pr-12 sm:text-sm border-gray-300 rounded-md" />
           </div>
         </div>
