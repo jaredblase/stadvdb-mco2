@@ -1,7 +1,8 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
-import useSWR, { useSWRConfig } from 'swr'
+import { useSWRConfig } from 'swr'
+import useSWRImmutable from 'swr/immutable'
 import FlashCard from '../../components/flash-card'
 import Layout from '../../components/layout'
 import app from '../../lib/axiosConfig'
@@ -11,8 +12,7 @@ import genres from '../../lib/genres'
 const fetcher = (url) => app.get(url)
 
 function useMovie(id) {
-  const { data, error } = useSWR(id ? `/api/movies/${id}` : null, fetcher)
-
+  const { data, error } = useSWRImmutable(id ? `/api/movies/${id}` : null, fetcher)
   return {
     movie: data?.data?.result,
     isError: error,
@@ -29,7 +29,7 @@ export default function Movie() {
   const [serverError, setServerError] = useState(false)
   const { mutate } = useSWRConfig()
 
-  useEffect(() => setGenre1(movie?.genre1 || ''), [movie])
+  useEffect(() => setGenre1(movie?.genre1 || '') , [movie])
 
   const handleSubmit = async e => {
     const { movie: newMovie, isValid } = validate(e, movie)
@@ -53,6 +53,7 @@ export default function Movie() {
   const handleResetClick = () => {
     resetErrors()
     setServerError(false)
+    setGenre1('')
   }
 
   const handleEditClick = e => {
@@ -109,8 +110,8 @@ export default function Movie() {
             <label htmlFor="genre-1" className="block text-sm font-medium text-gray-700">Genre 1</label>
             <div className="mt-1 relative rounded-md shadow-sm">
               <select name="genre1" id="genre-1" disabled={isViewing} className="focus:ring-gray-600 focus:border-gray-600 
-            block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" defaultValue={movie.genre1} value={genre1} onChange={e => setGenre1(e.target.value)}>
-                <option value="" disabled hidden>{ isViewing ? 'None' : 'Select a genre...'}</option>
+            block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" defaultValue={movie.genre1 || ''} value={genre1} onChange={e => setGenre1(e.target.value)}>
+                <option value="" hidden>{ isViewing ? 'None' : 'Select a genre...'}</option>
                 {genres.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
@@ -119,8 +120,8 @@ export default function Movie() {
             <label htmlFor="genre-2" className="block text-sm font-medium text-gray-700">Genre 2</label>
             <div className="mt-1 relative rounded-md shadow-sm">
               <select name="genre2" id="genre-2" className="focus:ring-gray-600 focus:border-gray-600 
-            block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" disabled={isViewing || !genre1} defaultValue={movie.genre2}>
-                <option value="" disabled hidden>{ isViewing ? 'None' : 'Select a genre...'}</option>
+            block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" disabled={isViewing || !genre1} defaultValue={movie.genre2 || ''}>
+                <option value="" hidden>{ isViewing ? 'None' : 'Select a genre...'}</option>
                 {genres.filter(g => g != genre1).map(g => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>

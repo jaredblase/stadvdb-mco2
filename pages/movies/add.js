@@ -75,7 +75,7 @@ export default function Create() {
           <div className="mt-1 relative rounded-md shadow-sm">
             <select name="genre1" id="genre-1" className="focus:ring-gray-600 focus:border-gray-600 
             block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" value={genre1} onChange={e => setGenre1(e.target.value)}>
-              <option value="" disabled hidden>Select a genre...</option>
+              <option value="" hidden>Select a genre...</option>
               {genres.map(g => <option key={g} value={g}>{g}</option>)}
             </select>
           </div>
@@ -85,7 +85,7 @@ export default function Create() {
           <div className="mt-1 relative rounded-md shadow-sm">
             <select name="genre2" id="genre-2" className="focus:ring-gray-600 focus:border-gray-600 
             block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" disabled={!genre1} defaultValue="">
-              <option value="" disabled hidden>Select a genre...</option>
+              <option value="" hidden>Select a genre...</option>
               {genres.filter(g => g != genre1).map(g => <option key={g} value={g}>{g}</option>)}
             </select>
           </div>
