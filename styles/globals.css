@@ -26,3 +26,11 @@ table tr:nth-child(even) {
 input:disabled {
   @apply border-0 pl-0
 }
+
+select:disabled {
+  @apply border-0 pl-0
+}
+
+select:disabled {
+  background-image: none
+}

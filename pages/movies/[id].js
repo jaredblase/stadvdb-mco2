@@ -1,11 +1,12 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import FlashCard from '../../components/flash-card'
 import Layout from '../../components/layout'
 import app from '../../lib/axiosConfig'
 import useValidation from '../../lib/useValidation'
+import genres from '../../lib/genres'
 
 const fetcher = (url) => app.get(url)
 
@@ -23,9 +24,12 @@ export default function Movie() {
   const { movie, isError } = useMovie(id)
   const { errors, validate, resetErrors } = useValidation()
   const [isViewing, setIsViewing] = useState(true)
+  const [genre1, setGenre1] = useState('')
   const resetButton = useRef(null)
   const [serverError, setServerError] = useState(false)
   const { mutate } = useSWRConfig()
+
+  useEffect(() => setGenre1(movie?.genre1 || ''), [movie])
 
   const handleSubmit = async e => {
     const { movie: newMovie, isValid } = validate(e, movie)
@@ -74,7 +78,7 @@ export default function Movie() {
           </div>
         </div>
       }
-      {(serverError || isError) && <FlashCard /> }
+      {(serverError || isError) && <FlashCard />}
       {movie &&
         <form className="grid grid-cols-2 gap-x-2 gap-y-3" onSubmit={handleSubmit}>
           <div className="col-span-2">
@@ -101,9 +105,29 @@ export default function Movie() {
             </div>
             <p className="h-2 my-0.5 text-xs text-red-600 border-0">{errors.rank}</p>
           </div>
+          <div>
+            <label htmlFor="genre-1" className="block text-sm font-medium text-gray-700">Genre 1</label>
+            <div className="mt-1 relative rounded-md shadow-sm">
+              <select name="genre1" id="genre-1" disabled={isViewing} className="focus:ring-gray-600 focus:border-gray-600 
+            block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" defaultValue={movie.genre1} value={genre1} onChange={e => setGenre1(e.target.value)}>
+                <option value="" disabled hidden>{ isViewing ? 'None' : 'Select a genre...'}</option>
+                {genres.map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label htmlFor="genre-2" className="block text-sm font-medium text-gray-700">Genre 2</label>
+            <div className="mt-1 relative rounded-md shadow-sm">
+              <select name="genre2" id="genre-2" className="focus:ring-gray-600 focus:border-gray-600 
+            block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" disabled={isViewing || !genre1} defaultValue={movie.genre2}>
+                <option value="" disabled hidden>{ isViewing ? 'None' : 'Select a genre...'}</option>
+                {genres.filter(g => g != genre1).map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
+            </div>
+          </div>
 
           {isViewing ?
-            <div className="col-span-2 flex justify-end">
+            <div className="col-span-2 flex justify-end mt-4">
               <button
                 className="inline-flex justify-center py-2 px-4 border 
           border-transparent shadow-sm text-sm font-medium rounded-md text-white 
@@ -115,13 +139,13 @@ export default function Movie() {
             </div>
             :
             <>
-              <div>
+              <div className="mt-4">
                 <input type="reset" onClick={handleCancelClick} value="Cancel"
                   className="inline-flex justify-center py-2 px-4 border 
                           border-transparent shadow-sm text-sm font-medium rounded-md text-white 
                           bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 cursor-pointer"/>
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-end mt-4">
                 <input type="reset" onClick={handleResetClick} ref={resetButton}
                   className="inline-flex justify-center py-2 px-4 border 
                           border-transparent shadow-sm text-sm font-medium rounded-md text-white 
