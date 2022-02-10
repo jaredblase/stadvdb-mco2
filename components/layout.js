@@ -3,6 +3,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import ScrollToTop from './scroll-to-top'
+import { toast, ToastContainer } from 'react-toastify'
+import { useEffect } from 'react'
 
 export const siteTitle = 'IMDb Lite'
 
@@ -22,6 +24,34 @@ function NavItem({ path, text }) {
 
 export default function Layout({ children, home }) {
   const { back } = useRouter()
+
+  useEffect(() => {
+    if (localStorage.getItem('deleted')) {
+      toast.success(`Movie was deleted!`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      })
+      localStorage.removeItem('deleted')
+    }
+
+    if (localStorage.getItem('added')) {
+      toast.success(`Movie was added!`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      })
+      localStorage.removeItem('added')
+    }
+  })
 
   return (
     <div className={''}>
@@ -95,6 +125,8 @@ export default function Layout({ children, home }) {
         </div>
       </main>
       <ScrollToTop />
+      <ToastContainer />
     </div>
+
   )
 }
