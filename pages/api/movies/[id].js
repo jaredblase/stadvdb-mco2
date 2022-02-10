@@ -22,15 +22,23 @@ export default async function userHandler(req, res) {
           "UPDATE movies SET name=?, year=?, `rank`=?, genre1=?, genre2=? WHERE id=?",
           [name, year, rank, genre1, genre2, id]
         )
-
         res.status(200).json({ result: changedRows === 1 })
       } catch (err) {
         res.status(500).json({ result: false })
       }
       break
 
+    case 'DELETE':
+      try {
+        const { affectedRows } = await query("DELETE FROM movies WHERE id=?", [id])
+        res.status(200).json({ result: affectedRows === 1 })
+      } catch (err) {
+        res.status(500).json({ result: false })
+      }
+      break
+
     default:
-      res.setHeader('Allow', ['GET', 'PUT'])
+      res.setHeader('Allow', ['GET', 'PUT', 'DELETE'])
       res.status(405).end(`Method ${method} Not Allowed`)
   }
 }

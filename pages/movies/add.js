@@ -21,8 +21,10 @@ export default function Create() {
       try {
         const { data: { insertId } } = await app.post(`/api/movies/`, movie)
         if (insertId) {
-          router.push('/movies/' + insertId)
           setServerError(false)
+          localStorage.setItem('added', movie.name)
+          router.push('/movies/' + insertId)
+
         } else {
           console.log('No id received')
           setServerError(true)

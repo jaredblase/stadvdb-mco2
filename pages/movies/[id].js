@@ -15,21 +15,23 @@ function useMovie(id) {
   const { data, error } = useSWRImmutable(id ? `/api/movies/${id}` : null, fetcher)
   return {
     movie: data?.data?.result,
+    isLoading: !data && !error,
     isError: error,
   }
 }
 
 export default function Movie() {
-  const { query: { id } } = useRouter()
-  const { movie, isError } = useMovie(id)
+  const { query: { id }, replace } = useRouter()
+  const { movie, isLoading, isError } = useMovie(id)
   const { errors, validate, resetErrors } = useValidation()
   const [isViewing, setIsViewing] = useState(true)
   const [genre1, setGenre1] = useState('')
   const resetButton = useRef(null)
   const [serverError, setServerError] = useState(false)
   const { mutate } = useSWRConfig()
+  const formElem = useRef(null)
 
-  useEffect(() => setGenre1(movie?.genre1 || '') , [movie])
+  useEffect(() => setGenre1(movie?.genre1 || ''), [movie])
 
   const handleSubmit = async e => {
     const { movie: newMovie, isValid } = validate(e, movie)
@@ -50,10 +52,26 @@ export default function Movie() {
     }
   }
 
-  const handleResetClick = () => {
+  const handleResetClick = e => {
+    e.preventDefault()
+    formElem.current.reset()
     resetErrors()
     setServerError(false)
-    setGenre1('')
+    setGenre1(movie.genre1 || '')
+  }
+
+  const handleDeleteClick = async e => {
+    e.preventDefault()
+    try {
+      const { data: { result } } = await app.delete(`/api/movies/${id}`)
+      if (!result) throw Error('No record was deleted!')
+
+      setServerError(false)
+      localStorage.setItem('deleted', movie.name)
+      replace('/')
+    } catch (err) {
+      setServerError(true)
+    }
   }
 
   const handleEditClick = e => {
@@ -72,7 +90,7 @@ export default function Movie() {
       <Head>
         <title>{movie ? movie.name : 'View Movie'}</title>
       </Head>
-      {!movie &&
+      {isLoading &&
         <div className="flex justify-center items-center m-10">
           <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
             <span className="visually-hidden">Loading...</span>
@@ -81,7 +99,7 @@ export default function Movie() {
       }
       {(serverError || isError) && <FlashCard />}
       {movie &&
-        <form className="grid grid-cols-2 gap-x-2 gap-y-3" onSubmit={handleSubmit}>
+        <form className="grid grid-cols-2 gap-x-2 gap-y-3" onSubmit={handleSubmit} ref={formElem}>
           <div className="col-span-2">
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">Movie Title</label>
             <div className="mt-1 relative rounded-md shadow-sm">
@@ -110,8 +128,8 @@ export default function Movie() {
             <label htmlFor="genre-1" className="block text-sm font-medium text-gray-700">Genre 1</label>
             <div className="mt-1 relative rounded-md shadow-sm">
               <select name="genre1" id="genre-1" disabled={isViewing} className="focus:ring-gray-600 focus:border-gray-600 
-            block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" defaultValue={movie.genre1 || ''} value={genre1} onChange={e => setGenre1(e.target.value)}>
-                <option value="" hidden>{ isViewing ? 'None' : 'Select a genre...'}</option>
+            block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" value={genre1} onChange={e => setGenre1(e.target.value)}>
+                <option value="" hidden>{isViewing ? 'None' : 'Select a genre...'}</option>
                 {genres.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
@@ -121,7 +139,7 @@ export default function Movie() {
             <div className="mt-1 relative rounded-md shadow-sm">
               <select name="genre2" id="genre-2" className="focus:ring-gray-600 focus:border-gray-600 
             block w-full pr-20 sm:text-sm border-gray-300 rounded-md cursor-pointer" disabled={isViewing || !genre1} defaultValue={movie.genre2 || ''}>
-                <option value="" hidden>{ isViewing ? 'None' : 'Select a genre...'}</option>
+                <option value="" hidden>{isViewing ? 'None' : 'Select a genre...'}</option>
                 {genres.filter(g => g != genre1).map(g => <option key={g} value={g}>{g}</option>)}
               </select>
             </div>
@@ -129,7 +147,7 @@ export default function Movie() {
 
           {isViewing ?
             <div className="col-span-2 flex justify-end mt-4">
-              <button
+              <button onClick={handleDeleteClick}
                 className="inline-flex justify-center py-2 px-4 border 
           border-transparent shadow-sm text-sm font-medium rounded-md text-white 
           bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 mx-2 cursor-pointer">Delete</button>
@@ -160,10 +178,7 @@ export default function Movie() {
           }
         </form>
       }
-      <div className="col-span-2 flex justify-end">
-
-      </div>
-
+      {!isLoading && !movie && <p className="text-center">Page does not exist!</p>}
     </Layout>
   )
 }
