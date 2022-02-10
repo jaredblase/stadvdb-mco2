@@ -20,7 +20,13 @@ export default async function userHandler(req, res) {
       break
 
     case 'PUT':
-      res.status(200).json({ id, name: name || `User ${id}` })
+      try {
+        const { name, year, rank } = req.body
+        const { changedRows } = await query("UPDATE movies SET name=?, year=?, `rank`=? WHERE id=?", [name, year, rank, id])
+        res.status(200).json({ result: changedRows === 1 })
+      } catch (err) {
+        res.status(500).json({ result: false })
+      }
       break
 
     default:
