@@ -15,10 +15,6 @@ export default async function userHandler(req, res) {
       }
       break
 
-    case 'POST':
-      res.status(200).json({ id, name: name || `User ${id}` })
-      break
-
     case 'PUT':
       try {
         const { name, year, rank } = req.body
