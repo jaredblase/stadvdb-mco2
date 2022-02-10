@@ -22,3 +22,7 @@ input[type="search"]::-webkit-search-results-decoration {
 table tr:nth-child(even) {
   @apply bg-gray-50
 }
+
+input:disabled {
+  @apply border-0 pl-0
+}
