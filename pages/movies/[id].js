@@ -1,7 +1,8 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
-import useSWR, { mutate, useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
+import FlashCard from '../../components/flash-card'
 import Layout from '../../components/layout'
 import app from '../../lib/axiosConfig'
 import useValidation from '../../lib/useValidation'
@@ -73,11 +74,7 @@ export default function Movie() {
           </div>
         </div>
       }
-      { (serverError || isError) &&
-        <div className="border-2 border-red-400 bg-red-200 px-1 mb-4">
-          <p className="text-red-500 font-semibold text-sm">A server error has occured!</p>
-        </div>
-      }
+      {(serverError || isError) && <FlashCard /> }
       {movie &&
         <form className="grid grid-cols-2 gap-x-2 gap-y-3" onSubmit={handleSubmit}>
           <div className="col-span-2">
