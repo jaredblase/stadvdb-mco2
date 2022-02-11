@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
 import useSWRImmutable from 'swr/immutable'
-import FlashCard from '../../components/flash-card'
+import { toastServerError } from '../../components/toasts'
 import Layout from '../../components/layout'
 import app from '../../lib/axiosConfig'
 import useValidation from '../../lib/useValidation'
@@ -27,7 +27,6 @@ export default function Movie() {
   const [isViewing, setIsViewing] = useState(true)
   const [genre1, setGenre1] = useState('')
   const resetButton = useRef(null)
-  const [serverError, setServerError] = useState(false)
   const { mutate } = useSWRConfig()
   const formElem = useRef(null)
 
@@ -45,9 +44,8 @@ export default function Movie() {
         if (!result) throw Error('Server Error')
 
         setIsViewing(true)
-        setServerError(false)
       } catch (err) {
-        setServerError(true)
+        toastServerError()
       }
     }
   }
@@ -56,7 +54,6 @@ export default function Movie() {
     e.preventDefault()
     formElem.current.reset()
     resetErrors()
-    setServerError(false)
     setGenre1(movie.genre1 || '')
   }
 
@@ -65,12 +62,10 @@ export default function Movie() {
     try {
       const { data: { result } } = await app.delete(`/api/movies/${id}`)
       if (!result) throw Error('No record was deleted!')
-
-      setServerError(false)
       localStorage.setItem('deleted', movie.name)
       replace('/')
     } catch (err) {
-      setServerError(true)
+      toastServerError()
     }
   }
 
@@ -82,7 +77,6 @@ export default function Movie() {
   const handleCancelClick = () => {
     resetButton.current.click()
     setIsViewing(true)
-    setServerError(false)
   }
 
   return (
@@ -97,7 +91,6 @@ export default function Movie() {
           </div>
         </div>
       }
-      {(serverError || isError) && <FlashCard />}
       {movie &&
         <form className="grid grid-cols-2 gap-x-2 gap-y-3" onSubmit={handleSubmit} ref={formElem}>
           <div className="col-span-2">

@@ -5,14 +5,13 @@ import useValidation from '../../lib/useValidation'
 import genres from '../../lib/genres'
 import { useRouter } from 'next/router'
 import app from '../../lib/axiosConfig'
-import FlashCard from '../../components/flash-card'
+import { toastServerError } from '../../components/toasts'
 
 export default function Create() {
   const currYear = new Date().getFullYear()
   const { errors, validate, resetErrors } = useValidation()
   const [genre1, setGenre1] = useState('')
   const router = useRouter()
-  const [serverError, setServerError] = useState(false)
 
   const handleSubmit = async e => {
     const { movie, isValid } = validate(e)
@@ -21,16 +20,13 @@ export default function Create() {
       try {
         const { data: { insertId } } = await app.post(`/api/movies/`, movie)
         if (insertId) {
-          setServerError(false)
           localStorage.setItem('added', movie.name)
           router.push('/movies/' + insertId)
-
         } else {
           console.log('No id received')
-          setServerError(true)
         }
       } catch (err) {
-        setServerError(true)
+        toastServerError()
       }
     }
   }
@@ -38,7 +34,6 @@ export default function Create() {
   const handleResetClick = () => {
     resetErrors()
     setGenre1('')
-    setServerError(false)
   }
 
   return (
@@ -46,7 +41,6 @@ export default function Create() {
       <Head>
         <title> Add a Movie </title>
       </Head>
-      {serverError && <FlashCard />}
       <form className="grid grid-cols-2 gap-x-2 gap-y-3" onSubmit={handleSubmit}>
         <div className="col-span-2">
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">Movie Title</label>
