@@ -6,7 +6,10 @@ export default async function handler(req, res) {
   switch (method) {
     case 'GET':
       try {
-        const results = await query('SELECT * FROM movies WHERE name LIKE ?', [`%${req.query.q}%`])
+        await query('LOCK TABLES movies READ')
+        const [results, ] = await query('CALL getMovies(?)', [`%${req.query.q}%`])
+        await query('UNLOCK TABLES')
+        console.log(results)
         res.status(200).json({ results })
       } catch (err) {
         console.log(err)
