@@ -1,0 +1,16 @@
+{
+  "name": "stadvdb-mco2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:jaredblase/stadvdb-mco2.git",
+  "author": "Jared Sy <jaredblase@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "cd backend && yarn start && cd ../frontend && yarn start",
+    "dev": "concurrently \"cd backend && yarn dev\" \"cd frontend && yarn dev\"",
+    "postinstall": "cd backend && yarn install && cd ../frontend && yarn install"
+  },
+  "dependencies": {
+    "concurrently": "^7.0.0"
+  }
+}
