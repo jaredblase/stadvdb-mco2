@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
-import { useSWRConfig } from 'swr'
 import useSWRImmutable from 'swr/immutable'
 import { toastServerError } from '../../components/toasts'
 import Layout from '../../components/layout'
@@ -12,23 +11,24 @@ import genres from '../../lib/genres'
 const fetcher = (url) => app.get(url)
 
 function useMovie(id) {
-  const { data, error } = useSWRImmutable(id ? `/api/movies/${id}` : null, fetcher)
+  const { data, error, mutate } = useSWRImmutable(id ? `/api/movies/${id}` : null, fetcher)
   return {
     movie: data?.data?.result,
     isLoading: !data && !error,
     isError: error,
+    mutate,
   }
 }
 
 export default function Movie() {
   const { query: { id }, replace } = useRouter()
-  const { movie, isLoading, isError } = useMovie(id)
+  const { movie, isLoading, mutate } = useMovie(id)
   const { errors, validate, resetErrors } = useValidation()
   const [isViewing, setIsViewing] = useState(true)
   const [genre1, setGenre1] = useState('')
   const resetButton = useRef(null)
-  const { mutate } = useSWRConfig()
   const formElem = useRef(null)
+  const [postLoading, setPostLoading] = useState(false)
 
   useEffect(() => setGenre1(movie?.genre1 || ''), [movie])
 
@@ -37,15 +37,16 @@ export default function Movie() {
 
     if (isValid) {
       try {
-        mutate(`/api/movies/${id}`, newMovie, false)
+        setPostLoading(true)
         const { data: { result } } = await app.put(`/api/movies/${id}`, newMovie)
-        mutate(`/api/movies/${id}`)
-
+        mutate()
+        setIsViewing(true)
         if (!result) throw Error('Server Error')
 
-        setIsViewing(true)
       } catch (err) {
         toastServerError()
+      } finally {
+        setPostLoading(false)
       }
     }
   }
@@ -152,17 +153,17 @@ export default function Movie() {
             :
             <>
               <div className="mt-4">
-                <input type="reset" onClick={handleCancelClick} value="Cancel"
+                <input type="reset" onClick={handleCancelClick} value="Cancel" disabled={postLoading}
                   className="inline-flex justify-center py-2 px-4 border 
                           border-transparent shadow-sm text-sm font-medium rounded-md text-white 
                           bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 cursor-pointer"/>
               </div>
               <div className="flex justify-end mt-4">
-                <input type="reset" onClick={handleResetClick} ref={resetButton}
+                <input type="reset" onClick={handleResetClick} ref={resetButton} disabled={postLoading}
                   className="inline-flex justify-center py-2 px-4 border 
                           border-transparent shadow-sm text-sm font-medium rounded-md text-white 
                           bg-gray-400 hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 mx-2 cursor-pointer"/>
-                <input type="submit" value="Update"
+                <input type="submit" value={postLoading ? 'Updating...' : 'Update'} disabled={postLoading}
                   className="inline-flex justify-center py-2 px-4 border 
                             border-transparent shadow-sm text-sm font-medium rounded-md text-white 
                             bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer" />

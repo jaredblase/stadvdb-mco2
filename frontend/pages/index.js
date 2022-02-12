@@ -5,7 +5,6 @@ import Layout, { siteTitle } from '../components/layout'
 import app from '../lib/axiosConfig'
 import MovieTable from '../components/movie-table'
 import { useRouter } from 'next/router'
-import { toast } from 'react-toastify'
 
 const fetcher = (url) => app.get(url)
 

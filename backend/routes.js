@@ -1,13 +1,13 @@
-import { Router } from 'express';
+import { Router } from 'express'
+import { query1 } from './lib/dbs.js'
+import { v4 as uuidv4 } from 'uuid'
 
+const query = query1
 const router = Router()
 
 router.get('/', async (req, res) => {
   try {
-    await query('LOCK TABLES movies READ')
-    const [results,] = await query('CALL getMovies(?)', [`%${req.query.q}%`])
-    await query('UNLOCK TABLES')
-    console.log(results)
+    const [results] = await query('CALL getMovies(?)', [`%${req.query.q}%`], 'READ')
     res.status(200).json({ results })
   } catch (err) {
     console.log(err)
@@ -17,31 +17,18 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, year, rank, genre1, genre2 } = req.body
-    const { affectedRows, insertId } = await query(
-      "INSERT INTO movies (name, year, `rank`, genre1, genre2) VALUES (?, ?, ?, ?, ?)",
-      [name, year, rank, genre1, genre2]
-    )
-    res.status(200).json({ result: affectedRows === 1, insertId })
+    const movieId = uuidv4()
+    await query("CALL insertMovie(?, ?, ?, ?, ?, ?, 0)", [movieId, name, year, rank, genre1, genre2], 'WRITE')
+    res.status(200).json({ insertId: movieId })
   } catch (err) {
     console.log(err)
     res.status(500).json({ result: false })
   }
 })
 
-router.all('/:id', async (req, res, next) => {
-  try {
-    const id = parseInt(req.query.id)
-    if (!id) throw Error('Not a valid ID!')
-    req.query.id = id
-    next()
-  } catch (err) {
-    res.status(200).json({ result: false, err })
-  }
-})
-
 router.get('/:id', async (req, res) => {
   try {
-    const results = await query("SELECT * FROM movies WHERE id=?", [req.query.id])
+    const [results] = await query("CALL getMovie(?)", [req.params.id], 'READ')
     res.status(200).json({ result: results[0] })
   } catch (err) {
     console.log(err)
@@ -52,21 +39,20 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { name, year, rank, genre1, genre2 } = req.body
-    const { changedRows } = await query(
-      "UPDATE movies SET name=?, year=?, `rank`=?, genre1=?, genre2=? WHERE id=?",
-      [name, year, rank, genre1, genre2, req.query.id]
-    )
-    res.status(200).json({ result: changedRows === 1 })
+    const result = await query('CALL updateMovie(?, ?, ?, ?, ?, ?, 0)', [name, year, rank, genre1, genre2, req.params.id], 'WRITE')
+    res.status(200).json({ result: result.constructor.name == 'OkPacket' })
   } catch (err) {
+    console.log(err)
     res.status(500).json({ result: false })
   }
 })
 
 router.delete('/:id', async (req, res) => {
   try {
-    const { affectedRows } = await query("DELETE FROM movies WHERE id=?", [req.query.id])
-    res.status(200).json({ result: affectedRows === 1 })
+    const result = await query("CALL deleteMovie(?, 0)", [req.params.id], 'WRITE')
+    res.status(200).json({ result: result.constructor.name == 'OkPacket' })
   } catch (err) {
+    console.log(err)
     res.status(500).json({ result: false })
   }
 })

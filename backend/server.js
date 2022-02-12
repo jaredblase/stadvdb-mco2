@@ -16,7 +16,7 @@ servers.forEach(app => {
   app.use(cors({ origin: 'http://localhost:3000' }))
 
   // routes
-  app.use('/api/movie', router)
+  app.use('/api/movies', router)
 })
 
 servers.forEach(app => {
