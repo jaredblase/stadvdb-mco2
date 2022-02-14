@@ -9,7 +9,6 @@ export default async function handler(req, res) {
         await query('LOCK TABLES movies READ')
         const [results, ] = await query('CALL getMovies(?)', [`%${req.query.q}%`])
         await query('UNLOCK TABLES')
-        console.log(results)
         res.status(200).json({ results })
       } catch (err) {
         console.log(err)

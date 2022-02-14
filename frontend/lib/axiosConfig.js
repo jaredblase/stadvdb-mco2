@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const app = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: process.env.API_BASE_URL,
   headers: {
     'Access-Control-Allow-Credentials': 'true',
   },
