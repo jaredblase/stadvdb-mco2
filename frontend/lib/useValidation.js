@@ -32,6 +32,7 @@ export default function useValidation() {
         rank: isNaN(rank) ? null : rank,
         genre1: genre1 ? genre1 : null,
         genre2: genre2 ? genre2 : null,
+        oldYear: movie?.year
       },
       isValid: Object.keys(temp).length === 0
     }

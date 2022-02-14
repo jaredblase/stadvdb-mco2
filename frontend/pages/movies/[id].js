@@ -61,7 +61,7 @@ export default function Movie() {
   const handleDeleteClick = async e => {
     e.preventDefault()
     try {
-      const { data: { result } } = await app.delete(`/api/movies/${id}`)
+      const { data: { result } } = await app.delete(`/api/movies/${movie.year}/${id}`)
       if (!result) throw Error('No record was deleted!')
       localStorage.setItem('deleted', movie.name)
       replace('/')
