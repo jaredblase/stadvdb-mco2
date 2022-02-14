@@ -8,7 +8,8 @@
   "scripts": {
     "start": "cd backend && yarn start && cd ../frontend && yarn start",
     "dev": "concurrently \"cd backend && yarn dev\" \"cd frontend && yarn dev\"",
-    "postinstall": "cd backend && yarn install && cd ../frontend && yarn install"
+    "postinstall": "cd backend && yarn install && cd ../frontend && yarn install",
+    "heroku": "cd backend && yarn start"
   },
   "dependencies": {
     "concurrently": "^7.0.0"
