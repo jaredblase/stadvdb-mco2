@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { db1, db2, db3, query1, query2, query3 } from './lib/dbs.js'
+import { db2, db3, query1, query2, query3 } from './lib/dbs.js'
 import { v4 as uuidv4 } from 'uuid'
 import promiseHandler from './lib/promiseHandler.js'
 
