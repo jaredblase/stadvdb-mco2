@@ -23,8 +23,6 @@ function NavItem({ path, text }) {
 }
 
 export default function Layout({ children, home }) {
-  const { back } = useRouter()
-
   useEffect(() => {
     if (localStorage.getItem('deleted')) {
       toast.success(`Movie was deleted!`, {
@@ -97,6 +95,7 @@ export default function Layout({ children, home }) {
                   <div className="flex space-x-4">
                     <NavItem path="/" text="Search" />
                     <NavItem path="/movies/add" text="Add" />
+                    <NavItem path="/report" text="Report" />
                   </div>
                 </div>
               </div>
@@ -115,10 +114,12 @@ export default function Layout({ children, home }) {
         <div className="max-w-xl mx-auto">
           {!home && (
             <div className="mb-5">
-              <span className="border-b border-transparent hover:border-gray-800 cursor-pointer" onClick={back}>
-                <i className="fas fa-chevron-left fa-sm mr-2" />
-                <span>Back to home</span>
-              </span>
+              <Link href="/">
+                <span className="border-b border-transparent hover:border-gray-800 cursor-pointer">
+                  <i className="fas fa-chevron-left fa-sm mr-2" />
+                  <span>Back to home</span>
+                </span>
+              </Link>
             </div>
           )}
           {children}
