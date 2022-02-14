@@ -21,18 +21,33 @@ function useResults(q) {
 export default function Home() {
   const [search, setSearch] = useState('')
   const { results, isLoading, isError } = useResults(search)
+  const [input, setInput] = useState('')
   const { query: { q }, push } = useRouter()
 
   const handleSearch = e => {
     e.preventDefault()
-    const { q } = Object.fromEntries(new FormData(e.target))
-    if (q && q !== search) {
-      setSearch(q)
-      push('?q=' + q, undefined, { shallow: true })
-    }
+    setSearch(input)
   }
 
-  useEffect(() => setSearch(q), [])
+  // save most recent search
+  useEffect(() => {
+    if (search) {
+      localStorage.setItem('searchKey', search)
+      push('?q=' + search, undefined, { shallow: true })
+    }
+  }, [search])
+
+  useEffect(() => {
+    const key = localStorage.getItem('searchKey');
+    if (q) {
+      setSearch(q)
+      setInput(q)
+    } else if (key) {
+      setSearch(key)
+      setInput(key)
+    }
+  }, [q])
+
 
   return (
     <Layout home>
@@ -46,7 +61,7 @@ export default function Home() {
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span className="text-gray-500 sm:text-sm"> <i className="fas fa-search fa-sm" /> </span>
             </div>
-            <input type="search" name="q" id="search" placeholder="Input search term here..." defaultValue={q}
+            <input type="search" name="q" id="search" placeholder="Input search term here..." value={input} onChange={e => setInput(e.target.value)}
               className="focus:ring-gray-600 focus:border-gray-600 block w-full pl-8 pr-12 sm:text-sm border-gray-300 rounded-md" />
           </div>
         </div>
