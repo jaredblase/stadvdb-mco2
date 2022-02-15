@@ -14,7 +14,7 @@ const createDb = (host) => mysql({
 function query(db) {
   return async (q, values, mode) => {
     try {
-      await db.query('LOCK TABLES movies ' + mode)
+      await db.query('LOCK TABLES movies ' + mode + ', movies_log WRITE')
       const results = await db.query(q, values)
       await db.query('UNLOCK TABLES')
       await db.end()
@@ -27,7 +27,9 @@ function query(db) {
 
 export async function getLastLog(db) {
   try {
+    await db.query('LOCK TABLES movies_log READ')
     const [result] = await db.query('SELECT * FROM movies_log ORDER BY log_id DESC LIMIT 1')
+    await db.query('UNLOCK TABLES')
     return result
   } catch (e) {
     throw Error(e.message)
@@ -36,8 +38,12 @@ export async function getLastLog(db) {
 
 export async function getFinishedLogs(dbTo, dbFrom) {
   try {
+    await dbTo.query('LOCK TABLES movies_log READ')
+    await dbFrom.query('LOCK TABLES movies_log READ')
     const [result] = await dbTo.query('SELECT * FROM movies_log WHERE status != "started" ORDER BY log_id DESC LIMIT 1')
     const results = await dbFrom.query('SELECT * FROM movies_log WHERE status = "done" AND changedate > (?)', [result.changedate])
+    await dbTo.query('UNLOCK TABLES')
+    await dbFrom.query('UNLOCK TABLES')
 
     return results
   } catch (e) {
