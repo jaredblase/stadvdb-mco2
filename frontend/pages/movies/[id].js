@@ -61,12 +61,14 @@ export default function Movie() {
   const handleDeleteClick = async e => {
     e.preventDefault()
     try {
+      setPostLoading(true)
       const { data: { result } } = await app.delete(`/api/movies/${movie.year}/${id}`)
       if (!result) throw Error('No record was deleted!')
       localStorage.setItem('deleted', movie.name)
       replace('/')
     } catch (err) {
       toastServerError()
+      setPostLoading(false)
     }
   }
 
