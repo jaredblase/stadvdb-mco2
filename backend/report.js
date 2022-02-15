@@ -30,20 +30,18 @@ export default async function getReport(req, res) {
 
         const tasks = [ query2(queryString, [], 'READ'), query3(queryString, [], 'READ') ]
         const [ { data: data1 }, { data: data2 }] = await Promise.all(tasks.map(promiseHandler))
-        console.log(data1)
-        console.log(data2)
 
         let results = null
         if (data1 && data2) {
             results = data1
             for (let i = 0; i < 46; i++) {
                 if (i < 2 || i > 3) {
-                    results[i].cnt += data2[i].cnt
+                    results[i][0].cnt += data2[i][0].cnt
                     if (i % 2 === 1) {
-                        results[i].val += data2[i].val
+                        results[i][0].val += data2[i][0].val
                     }
                 } else {
-                    results[i].push(data2[i])
+                    data2.forEach((packet) => results[i].push(packet[0]))
                 }
             }
         } else if (data1) {
@@ -51,6 +49,7 @@ export default async function getReport(req, res) {
         } else if (data2) {
             results = data2
         }
+        console.log(results)
 
         res.json({ results })
     }
