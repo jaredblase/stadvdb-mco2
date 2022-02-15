@@ -40,7 +40,7 @@ export async function getFinishedLogs(dbTo, dbFrom) {
   try {
     await dbTo.query('LOCK TABLES movies_log READ')
     await dbFrom.query('LOCK TABLES movies_log READ')
-    const [result] = await dbTo.query('SELECT * FROM movies_log WHERE status != "started" ORDER BY log_id DESC LIMIT 1')
+    const [result] = await dbTo.query('SELECT * FROM movies_log WHERE status != "started" AND status != "rollback" ORDER BY log_id DESC LIMIT 1')
     const results = await dbFrom.query('SELECT * FROM movies_log WHERE status = "done" AND changedate > (?)', [result.changedate])
     await dbTo.query('UNLOCK TABLES')
     await dbFrom.query('UNLOCK TABLES')
