@@ -1,6 +1,7 @@
 import { db1, db2, db3, query1, query2, query3, getLastLog, getFinishedLogs } from "./lib/dbs.js";
 
-export default async function recovery() {
+export default async function recovery(config) {
+  console.log(config)
   const dbs = [db1, db2, db3]
   const queries = [query1, query2, query3]
 

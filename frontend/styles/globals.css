@@ -35,6 +35,6 @@ select:disabled {
   background-image: none
 }
 
-input[type="reset"]:disabled, input[type="submit"]:disabled {
+input[type="reset"]:disabled, input[type="submit"]:disabled, button:disabled {
   @apply opacity-50 cursor-not-allowed
 }

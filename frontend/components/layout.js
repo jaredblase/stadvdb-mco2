@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import { Disclosure } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import cn from 'classnames'
+import { toastSuccess } from './toasts'
 
 export const siteTitle = 'IMDb Lite'
 
@@ -49,28 +50,12 @@ function NavItem({ path, text }) {
 export default function Layout({ children, home }) {
   useEffect(() => {
     if (localStorage.getItem('deleted')) {
-      toast.success(`Movie was deleted!`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      })
+      toastSuccess(`Movie was deleted!`)
       localStorage.removeItem('deleted')
     }
 
     if (localStorage.getItem('added')) {
-      toast.success(`Movie was added!`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      })
+      toastSuccess(`Movie was added!`)
       localStorage.removeItem('added')
     }
   })
