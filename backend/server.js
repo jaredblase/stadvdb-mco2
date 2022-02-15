@@ -1,24 +1,17 @@
 import express from 'express'
 import cors from 'cors'
 import router from './routes.js'
+import 'dotenv/config'
 
-const app1 = express()
-const app2 = express()
+const app = express()
 
-app1.set('port', 3001)
-app2.set('port', 3002)
+app.set('port', process.env.PORT || 3001)
 
-const servers = [app1, app2]
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(cors({ origin: process.env.NODE_ENV == 'production' ? process.env.PRODUCTION_DOMAIN : 'http://localhost:3000' }))
 
-servers.forEach(app => {
-  app.use(express.urlencoded({ extended: true }))
-  app.use(express.json())
-  app.use(cors({ origin: 'http://localhost:3000' }))
+// routes
+app.use('/api/movies', router)
 
-  // routes
-  app.use('/api/movies', router)
-})
-
-servers.forEach(app => {
-  app.listen(app.get('port'), () => console.log(`Find the server at: http://localhost:${app.get('port')}/`))
-})
+app.listen(app.get('port'), () => console.log(`Find the server at: http://localhost:${app.get('port')}/`))
