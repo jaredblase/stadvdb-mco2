@@ -11,6 +11,13 @@ import cn from 'classnames'
 
 export const siteTitle = 'IMDb Lite'
 
+const navItems = [
+  { path: "/", text: "Search" },
+  { path: "/movies/add", text: "Add" },
+  { path: "/report", text: "Report" },
+  { path: "/admin", text: "Admin" },
+]
+
 function MobNavItem({ path, text }) {
   const { pathname } = useRouter()
   const className = cn({
@@ -107,9 +114,7 @@ export default function Layout({ children, home }) {
                     </Link>
                     <div className="hidden sm:block sm:ml-6">
                       <div className="flex space-x-4">
-                        <NavItem path="/" text="Search" />
-                        <NavItem path="/movies/add" text="Add" />
-                        <NavItem path="/report" text="Report" />
+                        {navItems.map(nav => <NavItem key={nav.text} path={nav.path} text={nav.text} />)}
                       </div>
                     </div>
                   </div>
@@ -118,9 +123,7 @@ export default function Layout({ children, home }) {
 
               <Disclosure.Panel className="sm:hidden" id="mobile-menu">
                 <div className="px-2 pt-2 pb-3 space-y-1">
-                  <MobNavItem path="/" text="Search" />
-                  <MobNavItem path="/movies/add" text="Add" />
-                  <MobNavItem path="/report" text="Report" />
+                  {navItems.map(nav => <MobNavItem key={nav.text} path={nav.path} text={nav.text} />)}
                 </div>
               </Disclosure.Panel>
             </>
