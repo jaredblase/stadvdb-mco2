@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import router from './routes.js'
+import report from './report.js'
 import 'dotenv/config'
 
 const app = express()
@@ -17,6 +18,7 @@ app.use(cors({ origin: process.env.NODE_ENV == 'production' ? process.env.PRODUC
 
 // routes
 app.use('/api/movies', router)
+app.get('/api/report', report)
 
 app.get('/config', (req, res) => {
   res.status(200).json({

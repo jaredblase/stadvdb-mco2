@@ -8,6 +8,7 @@ const createDb = (host) => mysql({
     password: process.env.DB_PASSWORD,
     port: parseInt(process.env.DB_PORT),
     database: process.env.DB_DATABASE,
+    multipleStatements: true,
   }
 })
 
