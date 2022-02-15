@@ -23,7 +23,7 @@ table tr:nth-child(even) {
   @apply bg-gray-50
 }
 
-input[type="text"]:disabled {
+input[type="text"]:disabled, input[type="number"]:disabled {
   @apply border-0 pl-0
 }
 

@@ -1,17 +1,17 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
-import useSWRImmutable from 'swr/immutable'
 import { toastServerError } from '../../components/toasts'
 import Layout from '../../components/layout'
 import app from '../../lib/axiosConfig'
 import useValidation from '../../lib/useValidation'
 import genres from '../../lib/genres'
+import useSWR from 'swr'
 
 const fetcher = (url) => app.get(url)
 
 function useMovie(id) {
-  const { data, error, mutate } = useSWRImmutable(id ? `/api/movies/${id}` : null, fetcher)
+  const { data, error, mutate } = useSWR(id ? `/api/movies/${id}` : null, fetcher)
   return {
     movie: data?.data?.result,
     isLoading: !data && !error,
@@ -30,7 +30,11 @@ export default function Movie() {
   const formElem = useRef(null)
   const [postLoading, setPostLoading] = useState(false)
 
-  useEffect(() => setGenre1(movie?.genre1 || ''), [movie])
+  useEffect(() => {
+    if (isViewing) {
+      setGenre1(movie?.genre1 || '')
+    }
+  }, [movie])
 
   const handleSubmit = async e => {
     const { movie: newMovie, isValid } = validate(e, movie)
@@ -42,7 +46,6 @@ export default function Movie() {
         mutate()
         setIsViewing(true)
         if (!result) throw Error('Server Error')
-
       } catch (err) {
         toastServerError()
       } finally {
