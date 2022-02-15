@@ -14,7 +14,7 @@ const createDb = (host) => mysql({
 function query(db) {
   return async (q, values, mode) => {
     try {
-      await db.query('LOCK TABLES movies ' + mode)
+      await db.query('LOCK TABLES movies ' + mode + ', movies_log WRITE')
       const results = await db.query(q, values)
       await db.query('UNLOCK TABLES')
       await db.end()
