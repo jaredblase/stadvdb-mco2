@@ -9,7 +9,7 @@ app.set('port', process.env.PORT || 3001)
 app.set('node1', true)
 app.set('node2', true)
 app.set('node3', true)
-app.set('crashTransactions', false)
+app.set('crashTransactions', 0)
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -32,7 +32,7 @@ app.post('/config', (req, res) => {
   app.set('node1', node1)
   app.set('node2', node2)
   app.set('node3', node3)
-  app.set('crashTransactions', crashTransactions)
+  app.set('crashTransactions', crashTransactions ? 1 : 0)
   res.status(200).json({ result: true })
 })
 

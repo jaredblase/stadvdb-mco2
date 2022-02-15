@@ -16,7 +16,7 @@ app.use(cors({
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-setInterval(() => recovery([app.get('node1'), app.get('node2'), app.get('node3')]), 10000)
+setInterval(() => recovery([app.get('node1'), app.get('node2'), app.get('node3')]), 30000)
 
 app.get('/config', (req, res) => {
   res.status(200).json({
