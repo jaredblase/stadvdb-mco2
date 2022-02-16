@@ -30,7 +30,7 @@ export default function AdminPage() {
 
   const updateConfig = async () => {
     setLoading(true)
-    const tasks = [axios.post(process.env.NEXT_PUBLIC_RECOVERY_BASE_URL + '/config', { node1, node2, node3 }),
+    const tasks = [axios.post(process.env.NEXT_PUBLIC_RECOVERY_BASE_URL.replace(/\/$/, "") + '/config', { node1, node2, node3 }),
     app.post('/config', { node1, node2, node3, crashTransactions })]
     const res = await Promise.all(tasks)
     console.log(res)
