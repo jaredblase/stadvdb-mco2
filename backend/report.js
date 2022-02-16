@@ -28,7 +28,15 @@ export default async function getReport(req, res) {
     console.log(e)
 
     const tasks = [query2(queryString, [], 'READ'), query3(queryString, [], 'READ')]
-    const [{ data: data1 }, { data: data2 }] = await Promise.all(tasks.map(promiseHandler))
+    let [{ data: data1 }, { data: data2 }] = await Promise.all(tasks.map(promiseHandler))
+
+    if (!req.app.get('node2')) {
+      data1 = null
+    }
+
+    if (!req.app.get('node3')) {
+      data2 = null
+    }
 
     let results = null
     if (data1 && data2) {

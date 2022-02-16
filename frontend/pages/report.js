@@ -77,6 +77,7 @@ export default function Report() {
           <Table headers={['Genre', 'Count', 'Average Rating']} data={genres} />
         </>
       }
+      { !isLoading && !data && <p>An error has occured!</p>}
     </Layout>
   )
 }
