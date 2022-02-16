@@ -40,7 +40,7 @@ export default async function getReport(req, res) {
             results[i][0].val += data2[i][0].val
           }
         } else {
-          data2.forEach((packet) => results[i].push(packet[0]))
+          data2[i].forEach((packet) => results[i].push(packet))
         }
       }
     } else if (data1) {

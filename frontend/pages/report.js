@@ -52,6 +52,7 @@ export default function Report() {
 
   useEffect(() => {
     if (data) {
+      console.log(data)
       setDecades(processDecades(data[2], data[3]))
       setGenres(processGenres(data.slice(4)))
     }
