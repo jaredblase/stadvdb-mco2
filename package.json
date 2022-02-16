@@ -7,8 +7,8 @@
   "license": "MIT",
   "scripts": {
     "start": "cd backend && yarn start && cd ../frontend && yarn start",
-    "dev": "concurrently \"cd backend && yarn dev\" \"cd frontend && yarn dev\" \"cd recovery && yarn dev\"",
-    "postinstall": "cd backend && yarn install && cd ../frontend && yarn install && cd ../recovery && yarn install",
+    "dev": "concurrently \"cd backend && yarn dev\" \"cd frontend && yarn dev\"",
+    "postinstall": "cd backend && yarn install && cd ../frontend && yarn install",
     "heroku": "cd backend && yarn start"
   },
   "dependencies": {
